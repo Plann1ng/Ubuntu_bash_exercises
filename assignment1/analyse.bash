@@ -11,8 +11,9 @@ extension="."
 extension+="${filename##*.}"
 name="downloadTrial"
 name+="$extension"
+echo "$name"
   wget - "$1" -O "$name"
-   file_type=$(file $name)
+   file_type=$(file "$name")
    if echo "$file_type" | grep -q "text"; then
      echo
      echo number of lines ↓
@@ -60,15 +61,15 @@ done
 for char in $(echo "$last_line" | fold -w1); do
 ((byte_counter2++))
 if [ $byte_counter2 -lt 11 ]; then
-   last_bytes=$(hexdump -C $char | tail -n 1 | awk '{print $1}')
+   last_bytes=$(hexdump -C "$char" | tail -n 1 | awk '{print $1}')
    ten_last="$ten_last $last_bytes"
 fi
 done
      echo first ten bytes ↓
-     first_bytes=$(hexdump -n 20 -C $file | head -n 1 | awk '{print $2,$3,$4,$5,$6,$7,$8,$9,$10}')
+     first_bytes=$(hexdump -n 20 -C "$file" | head -n 1 | awk '{print $2,$3,$4,$5,$6,$7,$8,$9,$10}')
      echo "$first_bytes"
      echo last ten bytes ↓
-     last_bytes=$(hexdump -n 10 -C $file | tail -n 1 | awk '{print $2,$3,$4,$5,$6,$7,$8,$9,$10}')
+     last_bytes=$(hexdump -n 10 -C "$file" | tail -n 1 | awk '{print $2,$3,$4,$5,$6,$7,$8,$9,$10}')
      echo "$last_bytes"
      echo "The file is a text file."
    else
