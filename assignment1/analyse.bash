@@ -1,7 +1,16 @@
 #!/bin/bash
+#
+#Getting the source
+#
+#
 if curl --head --silent --fail "$1" 2> /dev/null;
  then
  curl -sI "$1" | grep -i "Content-Disposition" > /dev/null
+
+#
+#Getting correct extension
+#
+#
 if [ $? -eq 0 ]; then
   filename=$(curl -sI "$1" | grep -oP 'filename=.*' | cut -d= -f2 | tr -d '"')
 else
@@ -11,7 +20,11 @@ extension="."
 extension+="${filename##*.}"
 name="downloadTrial"
 name+="$extension"
-echo "$name"
+
+#
+#Creating the file and downloading the data, getting number of lines, words, empty lines.
+#
+#
   wget - "$1" -O "$name"
    file_type=$(file "$name")
    if echo "$file_type" | grep -q "text"; then
@@ -36,6 +49,11 @@ echo "$name"
    last_line=" "
    file="$name"
    last_line_indx=0
+
+#
+#Getting last index of the file. To be able to use it on conditional statement to retrieve last line only.
+#
+#
    while read -r line; do
       ((last_line_indx++))
    done < "$file"
@@ -52,7 +70,17 @@ echo "$name"
            echo "$last_line"
        fi
     done < "$file"
+  
+#
+#Getting the size
+#
+#
    echo size "$( wc -c "$name")"
+   
+#
+#Getting first and last ten characters
+#
+#
 for char in $(echo "$first_line" | fold -w1); do
 ((byte_counter++))
 if [ $byte_counter -lt 11 ]; then
@@ -65,6 +93,11 @@ if [ $byte_counter2 -lt 11 ]; then
    ten_last="$ten_last $char"
 fi
 done
+
+#
+#First and last ten bytes of the file
+#
+#
      echo first ten bytes ↓
      echo -n "$ten_first" | xxd -p -l 10
      echo last ten bytes ↓
@@ -74,7 +107,10 @@ done
      echo
      echo "The file is not a text file."
    fi
-
+#
+#If image file
+#
+#
   if echo "$file_type" | grep -q "image"; then
     wslview "$name"
     echo "The file is an image file."

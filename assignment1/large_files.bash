@@ -7,20 +7,23 @@ sizes=()
 names=()
 COUNTER=0
 # shellcheck disable=SC2044  # Don't warn about unreachable commands in this function
+#
+#Recursively iterate over directory
+#
+#
 for dir in $(find "$1" -type d); do
 COUNTER=$((COUNTER + 1))
   for file in "$dir"/*; do
-
-#if ! du "$file" &> /dev/null; then
-#  echo "Error: file '$file' not found or cannot be accessed."
-#else
     name=$(basename "$file")
     size=$(du -b "$file" | awk '{print $1}')
-#fi
 done
     sizes+=("$((size))")
     names+=("$name")
-  done
+done
+#
+#Modifying two lists together regarding the size. Algorithm taken from internet reference will be given.
+#
+#
 len=${#sizes[@]}
 for ((i=0; i<len-1; i++)); do
   max_index=$i
@@ -36,6 +39,8 @@ for ((i=0; i<len-1; i++)); do
   names[max_index]="$temp"
   sizes[max_index]="$temp"
 done
+
+
 totalSize=$(du -s "$1" | awk '{print $1}')
 echo ""
 echo "Total number of files scanned $COUNTER"
