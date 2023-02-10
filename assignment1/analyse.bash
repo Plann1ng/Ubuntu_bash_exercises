@@ -1,5 +1,4 @@
 #!/bin/bash
-#Getting the link
 if curl --head --silent --fail "$1" 2> /dev/null;
  then
  curl -sI "$1" | grep -i "Content-Disposition" > /dev/null
@@ -8,28 +7,25 @@ if [ $? -eq 0 ]; then
 else
   filename=$(echo "$1" | rev | cut -d/ -f1 | rev)
 fi
-#Setting up file name
 extension="."
 extension+="${filename##*.}"
 name="downloadTrial"
 name+="$extension"
-#Create the file
+echo "$name"
   wget - "$1" -O "$name"
    file_type=$(file "$name")
-#Number of lines
    if echo "$file_type" | grep -q "text"; then
      echo
+     clear
      echo number of lines ↓
      result_tmp=$(wc -l "$name")
      count=$(echo "$result_tmp" | awk '{print $1}')
      echo "$count"
-#Number of words
      echo number of words ↓
      result=$(wc -w "$name")
      count=$(echo "$result" | awk '{print $1}')
      echo "$count"
-#Number of empty spaces
-     echo number of empty spaces ↓
+     echo number of empty lines ↓
      grep -o ' ' "$name" | wc -l
    byte_counter=0
    byte_counter2=0
@@ -40,28 +36,23 @@ name+="$extension"
    last_line=" "
    file="$name"
    last_line_indx=0
-#Getting number of lines
    while read -r line; do
       ((last_line_indx++))
    done < "$file"
     while read -r line; do
      ((counter++))
-#First line
         if [[ $counter -eq 1 ]]; then
            first_line=$line
            echo
            echo first line ↓
            echo "$first_line"
-#Last line
         elif [[ $counter -eq last_line_indx ]]; then
            echo last line ↓
            last_line=$line
            echo "$last_line"
        fi
     done < "$file"
-#File size
-   echo Total size is "$( wc -c "$name")"
-#Iterate over the first and last lines and get their hex representation
+   echo size "$( wc -c "$name")"
 for char in $(echo "$first_line" | fold -w1); do
 ((byte_counter++))
 if [ $byte_counter -lt 11 ]; then
@@ -71,16 +62,13 @@ done
 for char in $(echo "$last_line" | fold -w1); do
 ((byte_counter2++))
 if [ $byte_counter2 -lt 11 ]; then
-   last_bytes=$(hexdump -C "$char" | tail -n 1 | awk '{print $1}')
-   ten_last="$ten_last $last_bytes"
+   ten_last="$ten_last $char"
 fi
 done
      echo first ten bytes ↓
-     first_bytes=$(hexdump -n 20 -C "$file" | head -n 1 | awk '{print $2,$3,$4,$5,$6,$7,$8,$9,$10}')
-     echo "$first_bytes"
+     echo -n "$ten_first" | xxd -p -l 10
      echo last ten bytes ↓
-     last_bytes=$(hexdump -n 10 -C "$file" | tail -n 1 | awk '{print $2,$3,$4,$5,$6,$7,$8,$9,$10}')
-     echo "$last_bytes"
+     echo -n "$ten_last" | xxd -p -l 10
      echo "The file is a text file."
    else
      echo
