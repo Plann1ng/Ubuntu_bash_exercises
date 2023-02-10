@@ -6,6 +6,7 @@ fi
 sizes=()
 names=()
 COUNTER=0
+# shellcheck disable=SC2044  # Don't warn about unreachable commands in this function
 for dir in $(find "$1" -type d); do
 COUNTER=$((COUNTER + 1))
   for file in "$dir"/*; do
