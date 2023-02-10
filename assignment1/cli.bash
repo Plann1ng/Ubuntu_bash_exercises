@@ -1,4 +1,3 @@
-
 #!/usr/bin/env bash
 #
 # A template for creating command line scripts taking options, commands
@@ -16,17 +15,6 @@ SCRIPT=$( basename "$0" )
 
 # Current version
 VERSION="1.0.0"
-
-
-
-curl -sI https://github.com/Plann1ng/1DV503DatabasaTehnology/blob/main/Assignment2/assignment2_Database.py | grep -i "Content-Disposition" > /dev/null
-if [ $? -eq 0 ]; then
-  filename=$(curl -sI https://github.com/Plann1ng/1DV503DatabasaTehnology/blob/main/Assignment2/assignment2_Database.py | grep -oP 'filename=.*' | cut -d= -f2 | tr -d '"')
-else
-  filename=$(echo https://github.com/Plann1ng/1DV503DatabasaTehnology/blob/main/Assignment2/assignment2_Database.py | rev | cut -d/ -f1 | rev)
-fi
-
-extension="${filename##*.}"
 
 #
 # Message to display for usage and help.
@@ -90,6 +78,7 @@ function version
 # Function for taking care of specific command. Name the function as the
 # command is named.
 #
+# shellcheck disable=SC2317  # Don't warn about unreachable commands in this function
 function app-command1
 {
     echo "This is output from command1."
@@ -101,6 +90,7 @@ function app-command1
 # Function for taking care of specific command. Name the function as the
 # command is named.
 #
+# shellcheck disable=SC2317  # Don't warn about unreachable commands in this function
 function app-command2
 {
     echo "This is output from command2."
@@ -115,6 +105,7 @@ function app-command2
 # Function for taking care of specific command. Name the function as the
 # command is named.
 #
+# shellcheck disable=SC2317  # Don't warn about unreachable commands in this function
 function app-calendar
 {
     local events="$1"
@@ -132,6 +123,7 @@ function app-calendar
 #
 # Function to print out beautiful quote.
 #
+# shellcheck disable=SC2317  # Don't warn about unreachable commands in this function
 function app-dailyQuote
 {  counter=0
    line="\U1F6B2"
@@ -151,9 +143,11 @@ function app-dailyQuote
 #
 # Function to get daily quote online and prints it out.
 #
+# shellcheck disable=SC2317  # Don't warn about unreachable commands in this function
 function app-dailyOnlineQuote
 {
-   local quote="$(curl https://dummyjson.com/quotes/random)"
+   local quote=""
+   quote="$(curl https://dummyjson.com/quotes/random)"
    clear
    output=$(echo -e "$quote" | cut -c 19- | awk -F'.' '{print$1}')
    cowsay "$output"
