@@ -124,10 +124,11 @@ function app-calendar
 # Function to print out beautiful quote.
 #
 # shellcheck disable=SC2317  # Don't warn about unreachable commands in this function
+# shellcheck disable=SC2155  # Don't warn about unreachable commands in this function
 function app-dailyQuote
 {  counter=0
    line="\U1F6B2"
-   local quote="|Life is like riding a bicycle. To keep your balance, you must keep moving.|"
+   local quote=$(fortune)
    for ((i=0; i<${#quote}; i++)); do
    if [ "$counter" -gt 1 ]; then
     line+="="
@@ -136,7 +137,7 @@ function app-dailyQuote
    done
    line+="\U0001F9D8"
    echo -e "$line"
-   echo "$quote"
+   echo "|$quote|"
    echo -e "$line"
 }
 

@@ -22,4 +22,3 @@ endSeconds=$(date +%s)
 
 # Print execution time
 echo "Backup has been made in $((endSeconds-startSeconds)) seconds."
-

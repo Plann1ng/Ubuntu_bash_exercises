@@ -1,8 +1,0 @@
-#!/bin/bash
-
-# Check if the directory to be backed up exists
-if [ ! -d "$1" ]; then
-  echo "Error: directory $1 does not exist."
-  exit 1
-fi
-

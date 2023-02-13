@@ -6,11 +6,13 @@
 if curl --head --silent --fail "$1" 2> /dev/null;
  then
  curl -sI "$1" | grep -i "Content-Disposition" > /dev/null
+fi
 
 #
 #Getting correct extension
 #
 #
+# shellcheck disable=SC2181  # Don't warn about unreachable commands in this function
 if [ $? -eq 0 ]; then
   filename=$(curl -sI "$1" | grep -oP 'filename=.*' | cut -d= -f2 | tr -d '"')
 else
@@ -28,7 +30,8 @@ name+="$extension"
   wget - "$1" -O "$name"
    file_type=$(file "$name")
    if echo "$file_type" | grep -q "text"; then
-     echo
+    echo "The file is not an image file."
+         echo
      clear
      echo number of lines ↓
      result_tmp=$(wc -l "$name")
@@ -38,7 +41,7 @@ name+="$extension"
      result=$(wc -w "$name")
      count=$(echo "$result" | awk '{print $1}')
      echo "$count"
-     echo number of empty lines ↓
+     echo number of spaces ↓
      grep -o ' ' "$name" | wc -l
    byte_counter=0
    byte_counter2=0
@@ -52,6 +55,7 @@ name+="$extension"
 
 #
 #Getting last index of the file. To be able to use it on conditional statement to retrieve last line only.
+#If last line is empty the output will be empty as well.
 #
 #
    while read -r line; do
@@ -75,8 +79,43 @@ name+="$extension"
 #Getting the size
 #
 #
-   echo size "$( wc -c "$name")"
-   
+   wslview "$name"
+fi
+#
+#If image file
+#
+#
+  if echo "$file_type" | grep -q "image"; then
+      echo "The file is an image file."
+          echo Size of the file ↓
+    wc -c "$name"
+    byte_counter=0
+   byte_counter2=0
+   counter=0
+   ten_first=" "
+   ten_last=" "
+   first_line=" "
+   last_line=" "
+   file="$name"
+   last_line_indx=0
+
+#
+#Getting last index of the file. To be able to use it on conditional statement to retrieve last line only.
+#
+#
+   while read -r line; do
+      ((last_line_indx++))
+   done < "$file"
+    while read -r line; do
+     ((counter++))
+        if [[ $counter -eq 1 ]]; then
+           first_line=$line
+        elif [[ $counter -eq last_line_indx ]]; then
+           last_line=$line
+
+       fi
+    done < "$file"
+
 #
 #Getting first and last ten characters
 #
@@ -102,23 +141,9 @@ done
      echo -n "$ten_first" | xxd -p -l 10
      echo last ten bytes ↓
      echo -n "$ten_last" | xxd -p -l 10
-     echo "The file is a text file."
-   else
-     echo
-     echo "The file is not a text file."
-   fi
-#
-#If image file
-#
-#
-  if echo "$file_type" | grep -q "image"; then
-    wslview "$name"
-    echo "The file is an image file."
+     wslview "$name"
   else
     echo
     echo "The file is not an image file."
 fi
- else
   echo
-  echo "This page does not exist."
-fi
